@@ -1,6 +1,3 @@
-
-require 'pry'
-
 class Player
   attr_accessor :move, :name, :score, :move_history
 
