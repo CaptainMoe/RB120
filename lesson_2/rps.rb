@@ -85,12 +85,13 @@ class RPSGame
   def display_winner_message
     puts "#{human.name}: #{human.score}"
     puts "#{computer.name}: #{computer.score}"
-    final_winner?
+    display_final_winner
   end
 
   def display_move_history
-    puts "#{human.name}'s moves: #{human.move_history}"
-    puts "#{computer.name}'s moves: #{computer.move_history}"
+    system 'clear'
+    puts "#{human.name}'s moves: #{human.move_history.join(', ')}"
+    puts "#{computer.name}'s moves: #{computer.move_history.join(', ')}"
   end
 
   def display_choice
@@ -118,7 +119,7 @@ class RPSGame
     end
   end
 
-  def final_winner?
+  def display_final_winner
     puts "#{human.name} won the Game!" if human.score > computer.score
     puts "#{computer.name} won the Game!" if human.score < computer.score
   end
@@ -139,21 +140,23 @@ class RPSGame
     player.score += 1 unless player.nil?
   end
 
-  def final_score_reached?
+  def final_score_reached
     human.score >= 5 || computer.score >= 5
   end
 
   def play
     display_welcome_message
     loop do
+      display_move_history
+      display_winner_message
       human.choose
       computer.choose
       increment_score(winner?)
       display_winner
-      break if final_score_reached? || (play_again? == false)
+      break if final_score_reached || (play_again? == false)
     end
-    display_winner_message
     display_move_history
+    display_winner_message
     display_goodbay_message
   end
 end
