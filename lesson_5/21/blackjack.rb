@@ -1,4 +1,3 @@
-require 'pry'
 
 class Participant
   attr_reader :hand
