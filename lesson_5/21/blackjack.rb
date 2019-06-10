@@ -36,23 +36,23 @@ class Participant
   private
 
   def count_aces(hand)
-    num_aces = hand.count do |card|
+    hand.count do |card|
       card.value == 'Ace'
     end
   end
 
   def value_of(card)
     case card.value
-      when 'Ace'
-        11
-      when 'King'
-        10
-      when 'Queen'
-        10
-      when 'Jack'
-        10
-      else
-        card.value
+    when 'Ace'
+      11
+    when 'King'
+      10
+    when 'Queen'
+      10
+    when 'Jack'
+      10
+    else
+      card.value
     end
   end
 end
@@ -61,13 +61,12 @@ class Player < Participant
   def display_hand
     hand_output = []
     hand.each do |card|
-      hand_output <<  "#{card.value}:#{card.suit}"
+      hand_output << "#{card.value}:#{card.suit}"
     end
-    puts "Player's hand=> [#{hand_output.join(", ")}]"
+    puts "Player's hand=> [#{hand_output.join(', ')}]"
     puts "Your hand's total: #{hand_total}"
   end
 end
-
 
 class Dealer < Participant
   def display_hand
@@ -76,9 +75,9 @@ class Dealer < Participant
     unkown_cards = hand.size - 1
 
     hand_output << "#{first_card.value}:#{first_card.suit}"
-    unkown_cards.times { |card| hand_output << "unkown_card"}
+    unkown_cards.times { hand_output << "unkown_card" }
 
-    puts "Dealer's hand=> [#{hand_output.join(", ")}]"
+    puts "Dealer's hand=> [#{hand_output.join(', ')}]"
   end
 end
 
@@ -115,7 +114,7 @@ class Deck
       (2..10).each do |value|
         deck << Card.new(suit, value)
       end
-      FACE_CARDS.each { |face_card| deck << Card.new(suit, face_card)}
+      FACE_CARDS.each { |face_card| deck << Card.new(suit, face_card) }
     end
     deck
   end
