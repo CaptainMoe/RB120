@@ -1,3 +1,5 @@
+require 'pry'
+
 class Player
   attr_accessor :move, :name, :score, :move_history
 
@@ -74,6 +76,26 @@ class RPSGame
     @computer = Computer.new
   end
 
+  def play
+    display_welcome_message
+    loop do
+      loop do
+        display_movehistory_and_score
+        human.choose
+        computer.choose
+        increment_score(winner)
+        display_movehistory_and_score
+        display_winner
+        break if final_score_reached
+      end
+      display_result
+      break if play_again? == false
+    end
+    display_goodbay_message
+  end
+
+  private
+
   def display_welcome_message
     puts "Welcom to Rock, Paper, Scissors!"
   end
@@ -82,16 +104,31 @@ class RPSGame
     puts "Thanks for playing Rock, Paper, Scissors."
   end
 
-  def display_winner_message
+  def display_score
     puts "#{human.name}: #{human.score}"
     puts "#{computer.name}: #{computer.score}"
-    display_final_winner
   end
 
   def display_move_history
     system 'clear'
     puts "#{human.name}'s moves: #{human.move_history.join(', ')}"
     puts "#{computer.name}'s moves: #{computer.move_history.join(', ')}"
+  end
+
+  def display_movehistory_and_score
+    display_move_history
+    display_score
+  end
+
+  def display_result
+    winner = ""
+    if human.score > computer.score
+      winner = human.name
+    elsif human.score < computer.score
+      winner = computer.name
+    end
+    puts ""
+    puts "==>#{winner} won the game!"
   end
 
   def display_choice
@@ -103,15 +140,15 @@ class RPSGame
     display_choice
 
     if computer.move > human.move
-      puts ">>>>#{@computer.name} won this turn."
+      puts "=>#{@computer.name} won this turn."
     elsif human.move > computer.move
-      puts ">>>>#{@human.name} won this turn."
+      puts "=>#{@human.name} won this turn."
     else
       puts "It is a tie"
     end
   end
 
-  def winner?
+  def winner
     if computer.move > human.move
       computer
     elsif human.move > computer.move
@@ -141,23 +178,7 @@ class RPSGame
   end
 
   def final_score_reached
-    human.score >= 5 || computer.score >= 5
-  end
-
-  def play
-    display_welcome_message
-    loop do
-      display_move_history
-      display_winner_message
-      human.choose
-      computer.choose
-      increment_score(winner?)
-      display_winner
-      break if final_score_reached || (play_again? == false)
-    end
-    display_move_history
-    display_winner_message
-    display_goodbay_message
+    human.score >= 3 || computer.score >= 3
   end
 end
 
