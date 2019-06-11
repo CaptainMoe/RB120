@@ -1,14 +1,13 @@
 
 class Participant
-  attr_reader :hand
+  attr_accessor :hand
 
-  def initialize(deck)
-    @deck = deck
-    @hand = deck.deal
+  def initialize
+    self.hand = []
   end
 
-  def hit
-    @hand << @deck.remove_top_card
+  def hit(deck)
+    @hand << deck.remove_top_card
   end
 
   def bust?
@@ -128,13 +127,14 @@ class Card
 end
 
 class Game
-  attr_reader :player, :dealer
+  attr_reader :player, :dealer, :deck
 
   def initialize
     @deck = Deck.new
   end
 
   def start
+    welcom_message
     deal_cards
     show_initial_cards
     player_turn
@@ -147,8 +147,8 @@ class Game
   def deal_cards
     system('clear') || system('cls')
 
-    @player = Player.new(@deck)
-    @dealer = Dealer.new(@deck)
+    player.hand = deck.deal
+    dealer.hand = deck.deal
   end
 
   def show_initial_cards
@@ -159,13 +159,13 @@ class Game
   def player_turn
     puts "------Player's turn-------"
     loop do
-      puts "Do you want to hit or stay"
+      puts "Do you want to (h)it or (s)tay"
       answer = player_hit_or_stay
       case answer
-      when 'hit'
-        player.hit
+      when 'h'
+        player.hit(deck)
         puts "=>You hit"
-      when 'stay'
+      when 's'
         puts "=>You stay"
         break
       end
@@ -181,7 +181,7 @@ class Game
     loop do
       if dealer.hand_total < 17
         puts "=>Dealer hits"
-        dealer.hit
+        dealer.hit(deck)
         dealer.display_hand
       else
         puts "=>Dealer stays"
@@ -196,8 +196,8 @@ class Game
     answer = nil
     loop do
       answer = gets.chomp.downcase
-      break if ['hit', 'stay'].include?(answer)
-      puts "Wrong input, Enter hit or stay!"
+      break if ['h', 's'].include?(answer)
+      puts "Wrong input, Enter h or s!"
     end
     answer
   end
@@ -210,19 +210,30 @@ class Game
       puts "=>Dealer wins!"
     elsif dealer.bust?
       puts "=>Dealer busted!"
-      puts "=>You wins!"
-    elsif player.hand_total > dealer.hand_total
-      puts "=>You won!"
-    elsif  dealer.hand_total > player.hand_total
-      puts "=>Dealer won!"
-    elsif player.hand_total == dealer.hand_total
-      puts "=>It is a tie!"
+      puts "=>You win!"
+    else
+      case compare_participant_hands
+      when 1 then puts "=>You won!"
+      when -1 then puts "=>Dealer won!"
+      when 0 then puts "It is a tie!"
+      end
     end
+  end
+
+  def compare_participant_hands
+    player.hand_total <=> dealer.hand_total
   end
 
   def display_total_hand_values
     puts "Your total:     #{player.hand_total}"
     puts "Dealer's total: #{dealer.hand_total}"
+  end
+
+  def welcom_message
+    puts "Welcom to TicTacToe!"
+
+    @player = Player.new
+    @dealer = Dealer.new
   end
 end
 
