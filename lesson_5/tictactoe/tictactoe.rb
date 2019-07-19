@@ -1,3 +1,4 @@
+require 'pry'
 
 class Board
   WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
@@ -45,7 +46,6 @@ class Board
   end
 
   def reset
-    Square.reset_number_of_squares
     (1..9).each { |key| @squares[key] = Square.new }
   end
 
@@ -74,15 +74,11 @@ class Board
 end
 
 class Square
-  @@number_of_squares = 0
-
   INITIAL_MARKER = ' '
   attr_accessor :marker
 
   def initialize(marker=INITIAL_MARKER)
     @marker = marker
-    @@number_of_squares += 1
-    @position = @@number_of_squares
   end
 
   def unmarked?
@@ -93,16 +89,8 @@ class Square
     !unmarked?
   end
 
-  def self.reset_number_of_squares
-    @@number_of_squares = 0
-  end
-
   def to_s
-    if marker == " "
-      @position.to_s
-    else
-      marker
-    end
+    marker
   end
 end
 
@@ -125,8 +113,10 @@ class Person < Player
     puts "What is your name?"
 
     loop do
+      # binding.pry
       name = gets.chomp
-      break unless name.empty?
+      break unless name.empty? || name.squeeze == " "
+      puts "Wrong input, Please enter your name."
     end
 
     @name = name
@@ -203,7 +193,6 @@ class TTTGame
       break unless computer_marker == human_marker
       puts "You can't choose the same marker, Please select another marker."
     end
-
     { computer_marker: computer_marker, human_marker: human_marker }
   end
 
@@ -220,12 +209,13 @@ class TTTGame
     puts "choose a square between #{joinor('or')}: "
     square = nil
     loop do
-      square = gets.chomp.to_i
-      break if board.unmarked_keys.include?(square)
+      square = gets.chomp
+      break if board.unmarked_keys.include?(square.to_i) &&
+               square.to_i == square.to_f
       puts "Sorry, that is not a valid choice. Try Again."
     end
 
-    board[square] = human.marker
+    board[square.to_i] = human.marker
   end
 
   def human_turn?
@@ -292,11 +282,12 @@ class TTTGame
     puts "Do you want to play again?(yes, no)"
     ans = ""
     loop do
+      #binding.pry
       ans = gets.chomp
       break if ['yes', 'no'].include?(ans.downcase)
       puts "Wrong input! please put yes or no"
     end
-    ans == 'yes'
+    ans.downcase == 'yes'
   end
 
   def reset
@@ -312,7 +303,7 @@ class TTTGame
   end
 
   def display_board
-    puts "Your oppenet is #{computer.name}"
+    puts "Your opponent is '#{computer.name}'"
     puts "#{human.name}'s score: #{human.score}, " \
          "#{computer.name}'s score: #{computer.score}"
     puts ""
